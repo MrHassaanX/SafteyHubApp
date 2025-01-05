@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Profile</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Light Mode Styles */
+        body.light-mode {
+            background: linear-gradient(135deg, #4c4177, #2a5470);
+            color: #f8f9fa;
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background: #2c3e50;
+            color: #ecf0f1;
+        }
+
+        header {
+            background-color: #2c3e50;
+            color: #f8f9fa;
+            padding: 1rem;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        header img {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 50px;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .toggle-dark-mode {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #f39c12;
+            color: #2c3e50;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 100;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            text-align: center;
+        }
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #f39c12;
+        }
+        .profile-info {
+            font-size: 1.2rem;
+            margin: 1rem 0;
+        }
+        .profile-info strong {
+            color: #f39c12;
+        }
+
+        .button {
+            padding: 1rem;
+            background-color: #f39c12;
+            color: #2c3e50;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+            width: 48%; /* Adjusting the width to make them side by side */
+            box-sizing: border-box;
+            margin: 10px 1%;
+        }
+
+        .button:hover {
+            background-color: #f5b041;
+        }
+
+        #signOutButton {
+            background-color: #f39c12;
+            color: #2c3e50;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            width: 48%;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+            margin: 10px 1%;
+        }
+
+        #signOutButton:hover {
+            background-color: #f5b041;
+        }
+
+        .alert {
+            padding: 10px 20px;
+            background-color: #e74c3c;
+            color: white;
+            border-radius: 5px;
+            margin-top: 15px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .trigger-btn {
+            background-color: #e74c3c;
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            width: 48%;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+            margin: 10px 1%;
+        }
+
+        .trigger-btn:hover {
+            background-color: #c0392b;
+        }
+
+        #map {
+            height: 400px;
+            width: 100%;
+            border-radius: 15px;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body class="light-mode">
+    <header>
+        <img src="logo.png" alt="Safety Hub Logo">
+        <h1>Your Profile</h1>
+        <button class="toggle-dark-mode" id="toggleButton" onclick="toggleDarkMode()">Dark Mode</button>
+    </header>
+
+    <div class="container">
+        <h2>Your Profile Details</h2>
+        <p class="profile-info"><strong>Name:</strong> <span id="profileName"></span></p>
+        <p class="profile-info"><strong>Email:</strong> <span id="profileEmail"></span></p>
+        <p class="profile-info"><strong>Phone Number:</strong> <span id="profilePhone"></span></p>
+        <p class="profile-info"><strong>Blood Group:</strong> <span id="profileBlood"></span></p>
+        <p class="profile-info"><strong>Family Contact:</strong> <span id="profileFamily"></span></p>
+        
+        <div style="display: flex; justify-content: center; align-items: center;">
+            <button class="button" id="signOutButton" onclick="signOut()">Sign Out</button>
+            <button class="trigger-btn" onclick="triggerEmergency()">Trigger Emergency</button>
+        </div>
+        
+        <!-- Alert Box -->
+        <div class="alert" id="emergencyAlert">Emergency has been triggered! Help is on the way.</div>
+        
+        <!-- Google Map -->
+        <div id="map"></div>
+    </div>
+
+    <script>
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+        const user = users[0]; // Assume the user is already signed in
+
+        document.getElementById('profileName').textContent = user.name;
+        document.getElementById('profileEmail').textContent = user.email;
+        document.getElementById('profilePhone').textContent = user.phone;
+        document.getElementById('profileBlood').textContent = user.bloodGroup;
+        document.getElementById('profileFamily').textContent = user.familyContact;
+
+        function toggleDarkMode() {
+            const body = document.body;
+            const button = document.getElementById('toggleButton');
+            body.classList.toggle('dark-mode');
+            body.classList.toggle('light-mode');
+            if (body.classList.contains('dark-mode')) {
+                button.textContent = 'Light Mode';
+            } else {
+                button.textContent = 'Dark Mode';
+            }
+        }
+
+        function signOut() {
+            window.location.href = 'index.html'; // Redirect to the main page
+        }
+
+        // Emergency trigger function
+        function triggerEmergency() {
+            const alertBox = document.getElementById('emergencyAlert');
+            alertBox.style.display = 'block';
+            setTimeout(function() {
+                alertBox.style.display = 'none';
+            }, 5000); // Hide the alert after 5 seconds
+        }
+
+        // Initialize Google Map with live location
+        function initMap(position) {
+            const userLocation = { lat: position.coords.latitude, lng: position.coords.longitude };
+
+            const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 14,
+                center: userLocation,
+            });
+
+            const marker = new google.maps.Marker({
+                position: userLocation,
+                map: map,
+                title: "You are here",
+            });
+        }
+
+        // Load the Google Maps script dynamically
+        function loadMapScript(position) {
+            const script = document.createElement('script');
+            script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyCclEBCIs70G8iGKSurD6eEcJP5A9r1wKs&callback=initMap`;
+            document.head.appendChild(script);
+
+            // Initialize the map after getting the geolocation
+            navigator.geolocation.getCurrentPosition(initMap, handleGeolocationError);
+        }
+
+        // Handle errors for geolocation
+        function handleGeolocationError(error) {
+            alert("Error getting location: " + error.message);
+        }
+
+        // Request location and initialize the map
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(loadMapScript, handleGeolocationError);
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    </script>
+</body>
+</html>
+
+
