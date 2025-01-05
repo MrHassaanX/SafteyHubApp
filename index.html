@@ -106,6 +106,8 @@
         .emergency-button:hover {
             background: linear-gradient(135deg, #ff6f61, #d62839);
         }
+
+        /* Enhanced Alert Box Styles */
         .alert-box {
             display: none;
             position: fixed;
@@ -135,6 +137,21 @@
             cursor: pointer;
             font-weight: bold;
         }
+
+        .alert-error {
+            background-color: #e74c3c;
+            color: white;
+            border-radius: 15px;
+        }
+
+        .alert-error p {
+            color: #f8f9fa;
+        }
+
+        .alert-error button {
+            background-color: #d63031;
+        }
+
         .dark-mode {
             background: linear-gradient(135deg, #1f1f1f, #3c3c3c);
             color: #e0e0e0;
@@ -211,6 +228,17 @@
         <button onclick="closeAlert('loginAlert')">Close</button>
     </div>
 
+    <!-- Enhanced Alerts -->
+    <div class="alert-box alert-error" id="registrationError">
+        <p>Please fill in all fields.</p>
+        <button onclick="closeAlert('registrationError')">Close</button>
+    </div>
+
+    <div class="alert-box alert-error" id="loginError">
+        <p>Invalid credentials.</p>
+        <button onclick="closeAlert('loginError')">Close</button>
+    </div>
+
     <div class="alert-box trigger-alert" id="alertBox">
         <p>Emergency Triggered! Stay Calm, Help is on the Way!</p>
         <button onclick="closeAlert('alertBox')">Close</button>
@@ -235,7 +263,7 @@
                 document.getElementById('registerPage').classList.add('hidden');
                 document.getElementById('signInPage').classList.remove('hidden');
             } else {
-                alert('Please fill in all fields.');
+                document.getElementById('registrationError').style.display = 'block';
             }
         }
 
@@ -247,7 +275,7 @@
             if (user) {
                 window.location.href = 'profile.html'; // Redirect to profile page
             } else {
-                alert('Invalid credentials.');
+                document.getElementById('loginError').style.display = 'block';
             }
         }
 
